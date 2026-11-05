@@ -8,6 +8,7 @@ files to concrete classes.
 from dataclasses import dataclass, fields
 from typing import Any
 
+from satgen.stages import STAGE_NAMES
 from satgen.stages.s1_catastrophe_generator import (
     IMPLEMENTATIONS as CATASTROPHE_GENERATORS,
 )
@@ -53,7 +54,7 @@ class PipelineResult:
         return {f.name: getattr(self, f.name) for f in fields(self)}
 
 
-STAGE_NAMES: tuple[str, ...] = tuple(f.name for f in fields(PipelineResult))
+assert tuple(f.name for f in fields(PipelineResult)) == STAGE_NAMES
 
 
 @dataclass

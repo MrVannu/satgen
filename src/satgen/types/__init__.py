@@ -15,6 +15,7 @@ from satgen.types.stage_artifacts import (
     SatellitePositions,
     SatelliteView,
     SatelliteViews,
+    SerializedArtifact,
     StageArtifact,
     TemperatureField,
 )
@@ -28,6 +29,7 @@ __all__ = [
     "SatellitePositions",
     "SatelliteView",
     "SatelliteViews",
+    "SerializedArtifact",
     "StageArtifact",
     "TemperatureField",
     "TimeAxis",

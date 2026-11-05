@@ -1,6 +1,6 @@
-"""Stage outputs. Each artifact can be serialized to and deserialized from disk."""
+"""Stage outputs. Each artifact converts to and from a `SerializedArtifact`."""
 
-from satgen.types.stage_artifacts.base import StageArtifact
+from satgen.types.stage_artifacts.base import SerializedArtifact, StageArtifact
 from satgen.types.stage_artifacts.s1_fire_state import FireState
 from satgen.types.stage_artifacts.s2_temperature_field import TemperatureField
 from satgen.types.stage_artifacts.s3_radiance_field import RadianceField
@@ -16,6 +16,7 @@ __all__ = [
     "SatellitePositions",
     "SatelliteView",
     "SatelliteViews",
+    "SerializedArtifact",
     "StageArtifact",
     "TemperatureField",
 ]

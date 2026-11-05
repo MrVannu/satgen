@@ -1,12 +1,11 @@
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Self
 
 import numpy as np
 from numpy.typing import NDArray
 
 from satgen.types.grid import Grid, TimeAxis
-from satgen.types.stage_artifacts.base import StageArtifact, read_npz, write_npz
+from satgen.types.stage_artifacts.base import SerializedArtifact, StageArtifact
 
 
 @dataclass(frozen=True, eq=False)
@@ -28,15 +27,14 @@ class SatelliteViews(StageArtifact):
     time: TimeAxis
     views: tuple[SatelliteView, ...]
 
-    def serialize(self, path: Path) -> None:
+    def serialize(self) -> SerializedArtifact:
         # Arrays are keyed by view index, satellite ids live in the metadata.
         arrays: dict[str, NDArray[np.generic]] = {}
         for i, view in enumerate(self.views):
             arrays[f"{i}_visible"] = view.visible
             for band, arr in view.radiance.items():
                 arrays[f"{i}_radiance_{band}"] = arr
-        write_npz(
-            path,
+        return SerializedArtifact(
             meta={
                 "grid": self.grid.to_dict(),
                 "time": self.time.to_dict(),
@@ -49,18 +47,17 @@ class SatelliteViews(StageArtifact):
         )
 
     @classmethod
-    def deserialize(cls, path: Path) -> Self:
-        meta, arrays = read_npz(path)
+    def deserialize(cls, data: SerializedArtifact) -> Self:
         views = tuple(
             SatelliteView(
                 satellite_id=v["satellite_id"],
-                radiance={b: arrays[f"{i}_radiance_{b}"] for b in v["bands"]},
-                visible=arrays[f"{i}_visible"],
+                radiance={b: data.arrays[f"{i}_radiance_{b}"] for b in v["bands"]},
+                visible=data.arrays[f"{i}_visible"],
             )
-            for i, v in enumerate(meta["views"])
+            for i, v in enumerate(data.meta["views"])
         )
         return cls(
-            grid=Grid.from_dict(meta["grid"]),
-            time=TimeAxis.from_dict(meta["time"]),
+            grid=Grid.from_dict(data.meta["grid"]),
+            time=TimeAxis.from_dict(data.meta["time"]),
             views=views,
         )

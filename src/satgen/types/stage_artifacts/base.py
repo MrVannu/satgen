@@ -1,40 +1,35 @@
-"""Base class for stage outputs that can be written to and read from disk."""
+"""Base class for stage outputs that can be converted to and from plain data.
 
-import json
+Artifacts never touch the disk themselves: `serialize` produces a
+`SerializedArtifact` that `satgen.io` writes as is, and `deserialize` rebuilds
+the artifact from what `satgen.io` read back.
+"""
+
 from abc import ABC, abstractmethod
-from pathlib import Path
+from dataclasses import dataclass
 from typing import Any, Self
 
-import numpy as np
 from numpy.typing import NDArray
 
-_META_KEY = "__meta__"
+
+@dataclass(frozen=True, eq=False)
+class SerializedArtifact:
+    """Storage-agnostic representation of an artifact."""
+
+    meta: dict[str, Any]
+    """JSON-serializable metadata (grid, time, ids, ...)."""
+    arrays: dict[str, NDArray[Any]]
+    """Named numpy arrays."""
 
 
 class StageArtifact(ABC):
     """The output of one pipeline stage."""
 
     @abstractmethod
-    def serialize(self, path: Path) -> None:
-        """Write the artifact to `path` (a .npz file)."""
+    def serialize(self) -> SerializedArtifact:
+        """Convert the artifact into metadata and arrays."""
 
     @classmethod
     @abstractmethod
-    def deserialize(cls, path: Path) -> Self:
-        """Recreate the artifact from a file written by `serialize`."""
-
-
-def write_npz(
-    path: Path, meta: dict[str, Any], arrays: dict[str, NDArray[Any]]
-) -> None:
-    """Store JSON-serializable `meta` and named arrays in one .npz file."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(path, **{_META_KEY: np.array(json.dumps(meta))}, **arrays)
-
-
-def read_npz(path: Path) -> tuple[dict[str, Any], dict[str, NDArray[Any]]]:
-    """Inverse of `write_npz`: returns (meta, arrays)."""
-    with np.load(path, allow_pickle=False) as data:
-        meta = json.loads(str(data[_META_KEY]))
-        arrays = {key: data[key] for key in data.files if key != _META_KEY}
-    return meta, arrays
+    def deserialize(cls, data: SerializedArtifact) -> Self:
+        """Recreate the artifact from the output of `serialize`."""

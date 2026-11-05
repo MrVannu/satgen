@@ -1,12 +1,11 @@
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Self
 
 import numpy as np
 from numpy.typing import NDArray
 
 from satgen.types.grid import Grid, TimeAxis
-from satgen.types.stage_artifacts.base import StageArtifact, read_npz, write_npz
+from satgen.types.stage_artifacts.base import SerializedArtifact, StageArtifact
 
 
 @dataclass(frozen=True, eq=False)
@@ -18,18 +17,16 @@ class TemperatureField(StageArtifact):
     temperature: NDArray[np.float32]
     """Surface temperature in Kelvin, shape [t, y, x]."""
 
-    def serialize(self, path: Path) -> None:
-        write_npz(
-            path,
+    def serialize(self) -> SerializedArtifact:
+        return SerializedArtifact(
             meta={"grid": self.grid.to_dict(), "time": self.time.to_dict()},
             arrays={"temperature": self.temperature},
         )
 
     @classmethod
-    def deserialize(cls, path: Path) -> Self:
-        meta, arrays = read_npz(path)
+    def deserialize(cls, data: SerializedArtifact) -> Self:
         return cls(
-            grid=Grid.from_dict(meta["grid"]),
-            time=TimeAxis.from_dict(meta["time"]),
-            temperature=arrays["temperature"],
+            grid=Grid.from_dict(data.meta["grid"]),
+            time=TimeAxis.from_dict(data.meta["time"]),
+            temperature=data.arrays["temperature"],
         )

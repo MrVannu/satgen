@@ -4,11 +4,8 @@ import argparse
 import tomllib
 from pathlib import Path
 
-from satgen.io import save_run
+from satgen.io import OUTPUTS_DIR, save_run
 from satgen.pipeline import from_config
-
-# src/satgen/__main__.py -> repo root (valid for the editable install `uv sync` creates)
-OUTPUTS_DIR = Path(__file__).resolve().parents[2] / "outputs"
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -30,7 +27,9 @@ def main(argv: list[str] | None = None) -> None:
     result = pipeline.run(settings.grid, settings.time, settings.bands)
 
     out_dir = args.out or OUTPUTS_DIR / args.config.stem
-    written = save_run(result, settings.store_artifacts, out_dir, args.config)
+    written = save_run(
+        result.artifacts(), settings.store_artifacts, out_dir, args.config
+    )
     print(f"Wrote {len(written)} artifact(s) to {out_dir}:")
     for path in written:
         print(f"  {path.name}")
