@@ -5,7 +5,12 @@ description = "Modular, reproducible data generator that simulates how different
 readme = "README.md"
 # Upper bound: propagator pins numba==0.62.1, which only ships wheels up to CPython 3.13.
 requires-python = ">=3.13,<3.14"
-dependencies = []
+dependencies = [
+    "numpy>=2.0",
+]
+
+[project.scripts]
+satgen = "satgen.__main__:main"
 
 [dependency-groups]
 dev = [
