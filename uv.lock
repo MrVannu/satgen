@@ -122,7 +122,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "numpy", specifier = ">=2.0" }]
+requires-dist = [{ name = "numpy", specifier = "==2.5.4" }]
 
 [package.metadata.requires-dev]
 dev = [
