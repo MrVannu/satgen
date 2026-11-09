@@ -6,7 +6,9 @@ readme = "README.md"
 # Upper bound: propagator pins numba==0.62.1, which only ships wheels up to CPython 3.13.
 requires-python = ">=3.13,<3.14"
 dependencies = [
-    "numpy==2.5.4",
+    "numpy==2.3.5",
+    "propagator[cli,io]",
+    "pytz==2026.6",
 ]
 
 [project.scripts]
@@ -21,6 +23,9 @@ dev = [
 [tool.uv]
 # `uv add` writes exact pins (==) instead of lower bounds.
 add-bounds = "exact"
+
+[tool.uv.sources]
+propagator = { git = "https://github.com/CIMAFoundation/propagator_sim", rev = "48b45078093692aa8dcca98f51849a5fbcd981a5" }
 
 [build-system]
 requires = ["uv_build>=0.13.6,<0.14.0"]
