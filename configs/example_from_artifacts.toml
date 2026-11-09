@@ -1,0 +1,41 @@
+# Reuses the fire of a previous run and only recomputes the later stages,
+# here with more sensor noise.
+# Run `uv run satgen configs/example.toml` first, then:
+#   uv run satgen configs/example_from_artifacts.toml
+#
+# Grid, time and bands must match the run the artifact comes from.
+
+[run]
+bands = ["I4", "I5", "M13"]
+store_artifacts = ["sat_viewport_engine"]
+
+[run.grid]
+origin = [500000.0, 4800000.0]
+cell_size = 50.0
+shape = [64, 64]
+crs = "EPSG:32632"
+
+[run.time]
+start = 2025-08-01T12:00:00Z
+step_seconds = 600
+n_steps = 12
+
+[catastrophe_generator]
+implementation = "from_artifact"
+run_dir = "outputs/example"
+
+[domain_translator]
+implementation = "dummy"
+threshold = 0.5
+fire_k = 800.0
+
+[radiance_processor]
+implementation = "dummy"
+noise_level = 0.05
+seed = 42
+
+[satellite_position_generator]
+implementation = "dummy"
+
+[sat_viewport_engine]
+implementation = "dummy"

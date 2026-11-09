@@ -11,6 +11,51 @@ cd satgen
 uv sync
 ```
 
+## Usage
+
+```bash
+uv run satgen configs/example.toml                 # writes to outputs/example/
+uv run satgen configs/example.toml --out my_run/   # custom output directory
+```
+
+Without `--out`, results go to `outputs/<config name>/` in the repo root. Each run directory contains:
+
+- `sN_<stage>.npz`: the output (artifact) of each stage listed in `store_artifacts`; load it in Python with `satgen.io.read_artifact(path, FireState)`
+- `config.toml`: a copy of the config used
+- `git_commit.txt`: the commit the run was made with (suffixed `-dirty` if there were uncommitted changes)
+
+### Configuring a run
+
+A config file defines one dataset version; see [configs/example.toml](configs/example.toml).
+
+- `[run]` sets the bands (`I4`, `I5`, `M13`), the grid, the time steps and `store_artifacts`: the stages whose output is saved (default: only `sat_viewport_engine`).
+- Each stage section picks an implementation with `implementation = "..."`. All other keys are that implementation's parameters.
+
+To create a new version, copy the config and change values or implementations.
+
+To reuse a stored artifact instead of recomputing it, set the stage to `implementation = "from_artifact"` with `run_dir = "outputs/<run>"`; see [configs/example_from_artifacts.toml](configs/example_from_artifacts.toml). Grid, time and bands must match the original run.
+
+## Project structure
+
+```text
+configs/                 run configs
+src/satgen/
+├── __main__.py          entry point (`satgen` command)
+├── pipeline.py          Pipeline, config loading
+├── io.py                all disk access (artifacts, run metadata)
+├── types/               shared types (Grid, TimeAxis, Band)
+│   └── stage_artifacts/ output type of each stage, with serialize/deserialize
+└── stages/sN_<stage>/
+    ├── __init__.py      registry of implementations
+    ├── base.py          abstract base class
+    ├── dummy.py         implementations, one module each
+    └── from_artifact.py loads the stage's artifact from a previous run
+```
+
+See [docs/adr/initial-mvp-architecture.md](docs/adr/initial-mvp-architecture.md) for the pipeline architecture.
+
+**Adding an implementation:** create a module in the stage's folder with a class that subclasses the ABC from `base.py`, defines a nested `Params` dataclass and takes `params` in `__init__`. Then register it under a name in `IMPLEMENTATIONS` in the stage's `__init__.py`.
+
 ## Development
 
 ```bash

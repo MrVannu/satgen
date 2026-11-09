@@ -1,0 +1,42 @@
+# Example run using only dummy stages.
+# Run with: uv run satgen configs/example.toml
+#
+# Each stage section picks an implementation via `implementation`; all other keys
+# are passed to that implementation's `Params` dataclass.
+
+[run]
+bands = ["I4", "I5", "M13"]
+# Stages whose output is written to the output directory (default: only the last).
+store_artifacts = ["catastrophe_generator", "sat_viewport_engine"]
+
+[run.grid]
+origin = [500000.0, 4800000.0]  # upper-left corner (x, y) in CRS units
+cell_size = 50.0                # metres
+shape = [64, 64]                # (ny, nx)
+crs = "EPSG:32632"
+
+[run.time]
+start = 2025-08-01T12:00:00Z
+step_seconds = 600
+n_steps = 12
+
+[catastrophe_generator]
+implementation = "dummy"
+start_radius_cells = 2.0
+growth_cells_per_step = 1.5
+
+[domain_translator]
+implementation = "dummy"
+threshold = 0.5
+fire_k = 800.0
+
+[radiance_processor]
+implementation = "dummy"
+noise_level = 0.01
+seed = 42
+
+[satellite_position_generator]
+implementation = "dummy"
+
+[sat_viewport_engine]
+implementation = "dummy"
