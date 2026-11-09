@@ -1,0 +1,38 @@
+[project]
+name = "satgen"
+version = "0.1.0"
+description = "Modular, reproducible data generator that simulates how different satellites observe catastrophic events like wildfires."
+readme = "README.md"
+# Upper bound: propagator pins numba==0.62.1, which only ships wheels up to CPython 3.13.
+requires-python = ">=3.13,<3.14"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "ruff==0.17.3",
+    "pytest==9.2.0",
+]
+
+[tool.uv]
+# `uv add` writes exact pins (==) instead of lower bounds.
+add-bounds = "exact"
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "NPY", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -q"
