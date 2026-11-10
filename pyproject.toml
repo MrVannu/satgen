@@ -9,6 +9,7 @@ dependencies = [
     "numpy==2.3.5",
     "propagator[cli,io]",
     "pytz==2026.6",
+    "rasterio==1.5.2",
 ]
 
 [project.scripts]

@@ -613,6 +613,7 @@ dependencies = [
     { name = "numpy" },
     { name = "propagator", extra = ["cli", "io"] },
     { name = "pytz" },
+    { name = "rasterio" },
 ]
 
 [package.dev-dependencies]
@@ -626,6 +627,7 @@ requires-dist = [
     { name = "numpy", specifier = "==2.3.5" },
     { name = "propagator", extras = ["cli", "io"], git = "https://github.com/CIMAFoundation/propagator_sim?rev=48b45078093692aa8dcca98f51849a5fbcd981a5" },
     { name = "pytz", specifier = "==2026.6" },
+    { name = "rasterio", specifier = "==1.5.2" },
 ]
 
 [package.metadata.requires-dev]

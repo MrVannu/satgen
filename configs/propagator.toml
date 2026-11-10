@@ -1,0 +1,53 @@
+# Example run with the PROPAGATOR fire simulator on the data in data/.
+# Run with: uv run satgen configs/propagator.toml
+
+[run]
+bands = ["I4", "I5", "M13"]
+store_artifacts = ["catastrophe_generator", "sat_viewport_engine"]
+
+[run.grid]
+origin = [636949.3345, 5825793.8488]
+cell_size = 20.0
+shape = [453, 749]
+crs = "EPSG:32629"
+
+[run.time]
+start = 2022-09-01T15:00:00Z
+step_seconds = 3600
+n_steps = 13
+
+[catastrophe_generator]
+implementation = "propagator"
+dem = "data/dem.tif"
+fuel = "data/fuel.tif"
+fuel_config = "data/fuel_config.yaml"
+ignitions = ["POINT: [52.51751;-6.82354]"]
+realizations = 30
+
+[[catastrophe_generator.boundary_conditions]]
+time = 0
+w_dir = 0
+w_speed = 30
+moisture = 0
+
+[[catastrophe_generator.boundary_conditions]]
+time = 7200
+w_dir = 90
+w_speed = 30
+moisture = 0
+
+[domain_translator]
+implementation = "dummy"
+threshold = 0.5
+fire_k = 800.0
+
+[radiance_processor]
+implementation = "dummy"
+noise_level = 0.01
+seed = 42
+
+[satellite_position_generator]
+implementation = "dummy"
+
+[sat_viewport_engine]
+implementation = "dummy"
